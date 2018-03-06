@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Vue2.0 实现滚动视图+头部悬停+侧边索引 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="前言之前写过一篇基于better-scroll实现轮播图组件的文章，这篇文章是对better-scroll封装后,实现一个类似于通讯录的UI.效果如下：">
+<meta name="keywords" content="better-scroll">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue2.0 实现滚动视图+头部悬停+侧边索引">
+<meta property="og:url" content="http://yoursite.com/2018/02/06/Vue2-0-实现滚动视图-头部悬停-侧边索引/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言之前写过一篇基于better-scroll实现轮播图组件的文章，这篇文章是对better-scroll封装后,实现一个类似于通讯录的UI.效果如下：">
+<meta property="og:image" content="http://img.blog.csdn.net/20180204213912055?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbHZjaGVucWlhbmdf/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2018-03-06T03:28:07.832Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Vue2.0 实现滚动视图+头部悬停+侧边索引">
+<meta name="twitter:description" content="前言之前写过一篇基于better-scroll实现轮播图组件的文章，这篇文章是对better-scroll封装后,实现一个类似于通讯录的UI.效果如下：">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20180204213912055?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbHZjaGVucWlhbmdf/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Suche"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Vue2-0-实现滚动视图-头部悬停-侧边索引" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/02/06/Vue2-0-实现滚动视图-头部悬停-侧边索引/" class="article-date">
+  <time datetime="2018-02-06T06:17:38.000Z" itemprop="datePublished">2018-02-06</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Vue-js/">Vue.js</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Vue2.0 实现滚动视图+头部悬停+侧边索引
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>之前写过一篇基于<a href="http://blog.csdn.net/lvchenqiang_/article/details/79240884" target="_blank" rel="noopener">better-scroll实现轮播图组件</a>的文章，这篇文章是对better-scroll封装后,实现一个类似于通讯录的UI.效果如下：<br><a id="more"></a></p>
+<p><img src="http://img.blog.csdn.net/20180204213912055?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbHZjaGVucWlhbmdf/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
+<h3 id="需求分析"><a href="#需求分析" class="headerlink" title="需求分析"></a>需求分析</h3><p>根据需求，我们可以知道,整个UI大致分为三个模块。<br>1、头部导航<br>2、内容滚动区域<br>3、索引列表区域</p>
+<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><h6 id="1、首先我们对better-scroll进行一个简单的封装，方便我们下文的使用"><a href="#1、首先我们对better-scroll进行一个简单的封装，方便我们下文的使用" class="headerlink" title="1、首先我们对better-scroll进行一个简单的封装，方便我们下文的使用"></a>1、首先我们对better-scroll进行一个简单的封装，方便我们下文的使用</h6><p>scroll.vue<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br></pre></td><td class="code"><pre><span class="line">//提供一个简单的模板</span><br><span class="line">&lt;template&gt;</span><br><span class="line">&lt;div ref=&quot;wrapper&quot;&gt;</span><br><span class="line">&lt;slot&gt;&lt;/slot&gt;</span><br><span class="line">&lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">// 对better-scroll简单的封装，封装一些默认的配置 以及分发部分事件</span><br><span class="line">&lt;script type=&quot;text/ecmascript-6&quot;&gt;</span><br><span class="line">import BScroll from &apos;better-scroll&apos;</span><br><span class="line">export default &#123;</span><br><span class="line">props: &#123;</span><br><span class="line">probeType: &#123;</span><br><span class="line">type: Number,</span><br><span class="line">default: 1</span><br><span class="line">&#125;,</span><br><span class="line">click: &#123;</span><br><span class="line">type: Boolean,</span><br><span class="line">default: true</span><br><span class="line">&#125;,</span><br><span class="line">listenScroll: &#123;</span><br><span class="line">type: Boolean,</span><br><span class="line">default: false</span><br><span class="line">&#125;,</span><br><span class="line">data: &#123;</span><br><span class="line">type: Array,</span><br><span class="line">default: null</span><br><span class="line">&#125;,</span><br><span class="line">pullup: &#123;</span><br><span class="line">type: Boolean,</span><br><span class="line">default: false</span><br><span class="line">&#125;,</span><br><span class="line">beforeScroll: &#123;</span><br><span class="line">type: Boolean,</span><br><span class="line">default: false</span><br><span class="line">&#125;,</span><br><span class="line">refreshDelay: &#123;</span><br><span class="line">type: Number,</span><br><span class="line">default: 20</span><br><span class="line">&#125;</span><br><span class="line">&#125;,</span><br><span class="line">mounted() &#123;</span><br><span class="line">setTimeout(() =&gt; &#123;</span><br><span class="line">this._initScroll()</span><br><span class="line">&#125;, 20)</span><br><span class="line">&#125;,</span><br><span class="line">methods: &#123;</span><br><span class="line">_initScroll() &#123;</span><br><span class="line">if (!this.$refs.wrapper) &#123;</span><br><span class="line">return</span><br><span class="line">&#125;</span><br><span class="line">this.scroll = new BScroll(this.$refs.wrapper, &#123;</span><br><span class="line">probeType: this.probeType,</span><br><span class="line">click: this.click</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">if (this.listenScroll) &#123;</span><br><span class="line">let me = this</span><br><span class="line">this.scroll.on(&apos;scroll&apos;, (pos) =&gt; &#123;</span><br><span class="line">me.$emit(&apos;scroll&apos;, pos)</span><br><span class="line">&#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if (this.pullup) &#123;</span><br><span class="line">this.scroll.on(&apos;scrollEnd&apos;, () =&gt; &#123;</span><br><span class="line">if (this.scroll.y &lt;= (this.scroll.maxScrollY + 50)) &#123;</span><br><span class="line">this.$emit(&apos;scrollToEnd&apos;)</span><br><span class="line">&#125;</span><br><span class="line">&#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if (this.beforeScroll) &#123;</span><br><span class="line">this.scroll.on(&apos;beforeScrollStart&apos;, () =&gt; &#123;</span><br><span class="line">this.$emit(&apos;beforeScroll&apos;)</span><br><span class="line">&#125;)</span><br><span class="line">&#125;</span><br><span class="line">&#125;,</span><br><span class="line">disable() &#123;</span><br><span class="line">this.scroll &amp;&amp; this.scroll.disable()</span><br><span class="line">&#125;,</span><br><span class="line">enable() &#123;</span><br><span class="line">this.scroll &amp;&amp; this.scroll.enable()</span><br><span class="line">&#125;,</span><br><span class="line">refresh() &#123;</span><br><span class="line">this.scroll &amp;&amp; this.scroll.refresh()</span><br><span class="line">&#125;,</span><br><span class="line">scrollTo() &#123;</span><br><span class="line">this.scroll &amp;&amp; this.scroll.scrollTo.apply(this.scroll, arguments)</span><br><span class="line">&#125;,</span><br><span class="line">scrollToElement() &#123;</span><br><span class="line">this.scroll &amp;&amp; this.scroll.scrollToElement.apply(this.scroll, arguments)</span><br><span class="line">&#125;</span><br><span class="line">&#125;,</span><br><span class="line">watch: &#123;</span><br><span class="line">data() &#123;</span><br><span class="line">setTimeout(() =&gt; &#123;</span><br><span class="line">this.refresh()</span><br><span class="line">&#125;, this.refreshDelay)</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">&lt;style scoped lang=&quot;stylus&quot; rel=&quot;stylesheet/stylus&quot;&gt;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure></p>
+<h6 id="2、布局代码"><a href="#2、布局代码" class="headerlink" title="2、布局代码"></a>2、布局代码</h6><p>模板代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">&lt;scroll @scroll=&quot;scroll&quot;</span><br><span class="line">:listen-scroll=&quot;listenScroll&quot;</span><br><span class="line">:probe-type=&quot;probeType&quot;</span><br><span class="line">:data=&quot;data&quot;</span><br><span class="line">class=&quot;listview&quot;</span><br><span class="line">ref=&quot;listview&quot;&gt;</span><br><span class="line">&lt;ul&gt;</span><br><span class="line">&lt;li v-for=&quot;group in data&quot; class=&quot;list-group&quot; ref=&quot;listGroup&quot;&gt;</span><br><span class="line">&lt;h2 class=&quot;list-group-title&quot;&gt;&#123;&#123;group.title&#125;&#125;&lt;/h2&gt;</span><br><span class="line">&lt;uL&gt;</span><br><span class="line">&lt;li @click=&quot;selectItem(item)&quot; v-for=&quot;item in group.items&quot; class=&quot;list-group-item&quot;&gt;</span><br><span class="line">&lt;img class=&quot;avatar&quot; v-lazy=&quot;item.avatar&quot;&gt;</span><br><span class="line">&lt;span class=&quot;name&quot;&gt;&#123;&#123;item.name&#125;&#125;&lt;/span&gt;</span><br><span class="line">&lt;/li&gt;</span><br><span class="line">&lt;/uL&gt;</span><br><span class="line">&lt;/li&gt;</span><br><span class="line">&lt;/ul&gt;</span><br><span class="line">&lt;div class=&quot;list-shortcut&quot; @touchstart.stop.prevent=&quot;onShortcutTouchStart&quot; @touchmove.stop.prevent=&quot;onShortcutTouchMove&quot;</span><br><span class="line">@touchend.stop&gt;</span><br><span class="line">&lt;ul&gt;</span><br><span class="line">&lt;li v-for=&quot;(item, index) in shortcutList&quot; :data-index=&quot;index&quot; class=&quot;item&quot;</span><br><span class="line">:class=&quot;&#123;&apos;current&apos;:currentIndex===index&#125;&quot;&gt;&#123;&#123;item&#125;&#125;</span><br><span class="line">&lt;/li&gt;</span><br><span class="line">&lt;/ul&gt;</span><br><span class="line">&lt;/div&gt;</span><br><span class="line">&lt;div class=&quot;list-fixed&quot; ref=&quot;fixed&quot; v-show=&quot;fixedTitle&quot;&gt;</span><br><span class="line">&lt;div class=&quot;fixed-title&quot;&gt;&#123;&#123;fixedTitle&#125;&#125; &lt;/div&gt;</span><br><span class="line">&lt;/div&gt;</span><br><span class="line"></span><br><span class="line">&lt;/scroll&gt;</span><br><span class="line">&lt;/template&gt;</span><br></pre></td></tr></table></figure>
+<p>布局代码 主要是绘制滚动式图、右侧索引、头部导航定位</p>
+<p>js代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br></pre></td><td class="code"><pre><span class="line">&lt;script type=&quot;text/ecmascript-6&quot;&gt;</span><br><span class="line">import Scroll from &apos;base/scroll/scroll&apos;</span><br><span class="line">import &#123;getData&#125; from &apos;common/js/dom&apos;</span><br><span class="line"></span><br><span class="line">const TITLE_HEIGHT = 30</span><br><span class="line">const ANCHOR_HEIGHT = 18</span><br><span class="line"></span><br><span class="line">export default &#123;</span><br><span class="line">props: &#123;</span><br><span class="line">data: &#123;</span><br><span class="line">type: Array,</span><br><span class="line">default: []</span><br><span class="line">&#125;</span><br><span class="line">&#125;,</span><br><span class="line">computed: &#123;</span><br><span class="line">shortcutList() &#123;</span><br><span class="line">return this.data.map((group) =&gt; &#123;</span><br><span class="line">return group.title.substr(0, 1)</span><br><span class="line">&#125;)</span><br><span class="line">&#125;,</span><br><span class="line">fixedTitle() &#123;</span><br><span class="line">if (this.scrollY &gt; 0) &#123;</span><br><span class="line">return &apos;&apos;</span><br><span class="line">&#125;</span><br><span class="line">return this.data[this.currentIndex] ? this.data[this.currentIndex].title : &apos;&apos;</span><br><span class="line">&#125;</span><br><span class="line">&#125;,</span><br><span class="line">data() &#123;</span><br><span class="line">return &#123;</span><br><span class="line">scrollY: -1,</span><br><span class="line">currentIndex: 0,</span><br><span class="line">diff: -1</span><br><span class="line">&#125;</span><br><span class="line">&#125;,</span><br><span class="line">created() &#123;</span><br><span class="line">this.probeType = 3</span><br><span class="line">this.listenScroll = true</span><br><span class="line">this.touch = &#123;&#125;</span><br><span class="line">this.listHeight = []</span><br><span class="line">&#125;,</span><br><span class="line">methods: &#123;</span><br><span class="line">selectItem(item) &#123;</span><br><span class="line">this.$emit(&apos;select&apos;, item)</span><br><span class="line">&#125;,</span><br><span class="line">onShortcutTouchStart(e) &#123;</span><br><span class="line">let anchorIndex = getData(e.target, &apos;index&apos;)</span><br><span class="line">let firstTouch = e.touches[0]</span><br><span class="line">this.touch.y1 = firstTouch.pageY</span><br><span class="line">this.touch.anchorIndex = anchorIndex</span><br><span class="line"></span><br><span class="line">this._scrollTo(anchorIndex)</span><br><span class="line">&#125;,</span><br><span class="line">onShortcutTouchMove(e) &#123;</span><br><span class="line">let firstTouch = e.touches[0]</span><br><span class="line">this.touch.y2 = firstTouch.pageY</span><br><span class="line">let delta = (this.touch.y2 - this.touch.y1) / ANCHOR_HEIGHT | 0</span><br><span class="line">let anchorIndex = parseInt(this.touch.anchorIndex) + delta</span><br><span class="line"></span><br><span class="line">this._scrollTo(anchorIndex)</span><br><span class="line">&#125;,</span><br><span class="line">refresh() &#123;</span><br><span class="line">this.$refs.listview.refresh()</span><br><span class="line">&#125;,</span><br><span class="line">scroll(pos) &#123;</span><br><span class="line">this.scrollY = pos.y</span><br><span class="line">&#125;,</span><br><span class="line">_calculateHeight() &#123;</span><br><span class="line">this.listHeight = []</span><br><span class="line">const list = this.$refs.listGroup</span><br><span class="line">let height = 0</span><br><span class="line">this.listHeight.push(height)</span><br><span class="line">for (let i = 0; i &lt; list.length; i++) &#123;</span><br><span class="line">let item = list[i]</span><br><span class="line">height += item.clientHeight</span><br><span class="line">this.listHeight.push(height)</span><br><span class="line">&#125;</span><br><span class="line">&#125;,</span><br><span class="line">_scrollTo(index) &#123;</span><br><span class="line">if (!index &amp;&amp; index !== 0) &#123;</span><br><span class="line">return</span><br><span class="line">&#125;</span><br><span class="line">if (index &lt; 0) &#123;</span><br><span class="line">index = 0</span><br><span class="line">&#125; else if (index &gt; this.listHeight.length - 2) &#123;</span><br><span class="line">index = this.listHeight.length - 2</span><br><span class="line">&#125;</span><br><span class="line">this.scrollY = -this.listHeight[index]</span><br><span class="line">this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0)</span><br><span class="line">&#125;</span><br><span class="line">&#125;,</span><br><span class="line">watch: &#123;</span><br><span class="line">data() &#123;</span><br><span class="line">setTimeout(() =&gt; &#123;</span><br><span class="line">this._calculateHeight()</span><br><span class="line">&#125;, 20)</span><br><span class="line">&#125;,</span><br><span class="line">scrollY(newY) &#123;</span><br><span class="line">const listHeight = this.listHeight</span><br><span class="line">// 当滚动到顶部，newY&gt;0</span><br><span class="line">if (newY &gt; 0) &#123;</span><br><span class="line">this.currentIndex = 0</span><br><span class="line">return</span><br><span class="line">&#125;</span><br><span class="line">// 在中间部分滚动</span><br><span class="line">for (let i = 0; i &lt; listHeight.length - 1; i++) &#123;</span><br><span class="line">let height1 = listHeight[i]</span><br><span class="line">let height2 = listHeight[i + 1]</span><br><span class="line">if (-newY &gt;= height1 &amp;&amp; -newY &lt; height2) &#123;</span><br><span class="line">this.currentIndex = i</span><br><span class="line">this.diff = height2 + newY</span><br><span class="line">return</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">// 当滚动到底部，且-newY大于最后一个元素的上限</span><br><span class="line">this.currentIndex = listHeight.length - 2</span><br><span class="line">&#125;,</span><br><span class="line">diff(newVal) &#123;</span><br><span class="line">let fixedTop = (newVal &gt; 0 &amp;&amp; newVal &lt; TITLE_HEIGHT) ? newVal - TITLE_HEIGHT : 0</span><br><span class="line">if (this.fixedTop === fixedTop) &#123;</span><br><span class="line">return</span><br><span class="line">&#125;</span><br><span class="line">this.fixedTop = fixedTop</span><br><span class="line">this.$refs.fixed.style.transform = `translate3d(0,$&#123;fixedTop&#125;px,0)`</span><br><span class="line">&#125;</span><br><span class="line">&#125;,</span><br><span class="line">components: &#123;</span><br><span class="line">Scroll</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>dom.js</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">export function getData(el, name, val) &#123;</span><br><span class="line">const prefix = &apos;data-&apos;</span><br><span class="line">if (val) &#123;</span><br><span class="line">return el.setAttribute(prefix + name, val)</span><br><span class="line">&#125;</span><br><span class="line">return el.getAttribute(prefix + name)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>css代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line">&lt;style scoped lang=&quot;stylus&quot; rel=&quot;stylesheet/stylus&quot;&gt;</span><br><span class="line">@import &quot;~common/stylus/variable&quot;</span><br><span class="line">.listview</span><br><span class="line">position: relative</span><br><span class="line">width: 100%</span><br><span class="line">height: 100%</span><br><span class="line">overflow: hidden</span><br><span class="line">background: $color-background</span><br><span class="line">.list-group</span><br><span class="line">padding-bottom: 30px</span><br><span class="line">.list-group-title</span><br><span class="line">height: 30px</span><br><span class="line">line-height: 30px</span><br><span class="line">padding-left: 20px</span><br><span class="line">font-size: $font-size-small</span><br><span class="line">color: $color-text-l</span><br><span class="line">background: $color-highlight-background</span><br><span class="line">.list-group-item</span><br><span class="line">display: flex</span><br><span class="line">align-items: center</span><br><span class="line">padding: 20px 0 0 30px</span><br><span class="line">.avatar</span><br><span class="line">width: 50px</span><br><span class="line">height: 50px</span><br><span class="line">border-radius: 50%</span><br><span class="line">.name</span><br><span class="line">margin-left: 20px</span><br><span class="line">color: $color-text-l</span><br><span class="line">font-size: $font-size-medium</span><br><span class="line">.list-shortcut</span><br><span class="line">position: absolute</span><br><span class="line">z-index: 30</span><br><span class="line">right: 0</span><br><span class="line">top: 50%</span><br><span class="line">transform: translateY(-50%)</span><br><span class="line">width: 20px</span><br><span class="line">padding: 20px 0</span><br><span class="line">border-radius: 10px</span><br><span class="line">text-align: center</span><br><span class="line">background: $color-background-d</span><br><span class="line">font-family: Helvetica</span><br><span class="line">.item</span><br><span class="line">padding: 3px</span><br><span class="line">line-height: 1</span><br><span class="line">color: $color-text-l</span><br><span class="line">font-size: $font-size-small</span><br><span class="line">&amp;.current</span><br><span class="line">color: $color-theme</span><br><span class="line">.list-fixed</span><br><span class="line">position: absolute</span><br><span class="line">top: 0</span><br><span class="line">left: 0</span><br><span class="line">width: 100%</span><br><span class="line">.fixed-title</span><br><span class="line">height: 30px</span><br><span class="line">line-height: 30px</span><br><span class="line">padding-left: 20px</span><br><span class="line">font-size: $font-size-small</span><br><span class="line">color: $color-text-l</span><br><span class="line">background: $color-highlight-background</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
+<h6 id="引用示例"><a href="#引用示例" class="headerlink" title="引用示例"></a>引用示例</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">&lt;div class=&quot;singer&quot; ref=&quot;singer&quot;&gt;</span><br><span class="line">&lt;list-view :data=&quot;singers&quot; ref=&quot;list&quot;&gt;&lt;/list-view&gt;</span><br><span class="line">&lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">export default &#123;</span><br><span class="line">data() &#123;</span><br><span class="line">return &#123;</span><br><span class="line">singers: []</span><br><span class="line">&#125;</span><br><span class="line">&#125;,</span><br><span class="line">components: &#123;</span><br><span class="line">ListView</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;style scoped lang=&quot;stylus&quot; rel=&quot;stylesheet/stylus&quot;&gt;</span><br><span class="line">.singer</span><br><span class="line">position: fixed</span><br><span class="line">top: 88px</span><br><span class="line">bottom: 0</span><br><span class="line">width: 100%</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/02/06/Vue2-0-实现滚动视图-头部悬停-侧边索引/" data-id="cjef3hz5f00013lb34yju6o81" class="article-share-link">Teilen</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/better-scroll/">better-scroll</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/03/06/hello-world/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Neuer</strong>
+      <div class="article-nav-title">
+        
+          Hello World
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Kategorien</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Vue-js/">Vue.js</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/1/">1</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/better-scroll/">better-scroll</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/1/" style="font-size: 10px;">1</a> <a href="/tags/better-scroll/" style="font-size: 10px;">better-scroll</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archiv</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">letzter Beitrag</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/03/06/网络开发/">网络开发</a>
+          </li>
+        
+          <li>
+            <a href="/2018/03/06/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2018/02/06/Vue2-0-实现滚动视图-头部悬停-侧边索引/">Vue2.0 实现滚动视图+头部悬停+侧边索引</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
